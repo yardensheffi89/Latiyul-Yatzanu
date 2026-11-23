@@ -22,6 +22,15 @@ WEBSITE = {
     "A04": "https://www.parks.org.il/reserve-park/שמורת-טבע-נחל-תנינים/",
 }
 DROP = ("sources", "reliability", "checked", "estimated")
+
+# Merge extra datasets (e.g. the south beta from tools/south_data.py), replacing by id.
+extra_path = root / "data/extra.json"
+if extra_path.exists():
+    extra = json.loads(extra_path.read_text())
+    for group in ("trails", "lodging"):
+        ids = {x["id"] for x in extra.get(group, [])}
+        cat[group] = [x for x in cat[group] if x["id"] not in ids] + extra.get(group, [])
+SOUTH_LODGING = {"L01": "craters", "L02": "ramon", "L03": "deadsea", "L04": "north_negev"}
 for group in ("trails", "lodging", "activities"):
     for p in cat[group]:
         for k in DROP:
@@ -29,6 +38,10 @@ for group in ("trails", "lodging", "activities"):
         ph = photos.get(p["id"]) or p.get("photo")
         if ph:
             p["photo"] = {"url": ph["url"], "credit": f'{ph["artist"]} · {ph["lic"]}', "page": ph["page"]}
+        if "area" not in p:
+            p["area"] = "south" if p["id"] in SOUTH_LODGING else "center_north"
+            if p["id"] in SOUTH_LODGING:
+                p["subarea"] = SOUTH_LODGING[p["id"]]
         if group != "trails":
             p["website"] = WEBSITE.get(p["id"], p.get("website"))
 (root / "data/catalog.json").write_text(json.dumps(cat, ensure_ascii=False, indent=1))

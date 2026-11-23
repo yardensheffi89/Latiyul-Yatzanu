@@ -54,7 +54,69 @@ const S = {
   recCollapsed: false,
   view: "map",
   origin: null,            // { name, lat, lng, custom }
+  mode: "spontaneous",     // "spontaneous" | "plan"
+  planArea: "all",         // subarea filter in plan mode
+  pkgIndex: 0,
+  pkgActive: false,        // draw the current weekend package on the map
 };
+
+/* ---------------- planning helpers ---------------- */
+const AREAS = [
+  ["all", "כל הדרום"], ["ramon", "רמון והר הנגב"], ["craters", "המכתשים"], ["deadsea", "ים המלח וערד"],
+  ["arava", "ערבה"], ["eilat", "אילת והרי אילת"], ["north_negev", "צפון ומערב הנגב"],
+];
+// Rough road time between two points: straight line × 1.35, ~60 km/h average.
+function minutesBetween(a, b) {
+  const km = haversineKm(a, b) * 1.35;
+  return Math.max(5, Math.round(km / 60 * 60 / 5) * 5);
+}
+function nearbyTrails(place, max = 60) {
+  return S.catalog.trails
+    .map((t) => ({ t, min: minutesBetween(place, t) }))
+    .filter((x) => x.min <= max)
+    .sort((a, b) => a.min - b.min);
+}
+function nearbyLodging(place, max = 60) {
+  return S.catalog.lodging
+    .filter((l) => l.lat != null)
+    .map((l) => ({ l, min: minutesBetween(place, l) }))
+    .filter((x) => x.min <= max)
+    .sort((a, b) => a.min - b.min);
+}
+let PACKAGES = [];
+function buildPackages() {
+  const month = nextSaturday().getMonth() + 1;
+  PACKAGES = S.catalog.lodging.filter((l) => l.area === "south" && l.lat != null).map((l) => {
+    const cands = nearbyTrails(l, 75).map((x) => {
+      let score = x.min;
+      if (x.t.water === "wading") score -= 15;
+      if (x.t.difficulty === 1) score -= 8;
+      if (x.t.stroller === "yes" || x.t.stroller === "partial") score -= 4;
+      if (!x.t.months.includes(month)) score += 25;
+      return { ...x, score };
+    }).sort((a, b) => a.score - b.score);
+    const picked = [];
+    for (const c of cands) {
+      if (picked.length >= 3) break;
+      if (c.t.difficulty === 3 && picked.some((p) => p.t.difficulty === 3)) continue;
+      picked.push(c);
+    }
+    const km = picked.reduce((s, x) => s + (x.t.km || 0), 0);
+    return { id: `P-${l.id}`, lodging: l, trails: picked, km: Math.round(km * 10) / 10, sub: l.subarea };
+  }).filter((p) => p.trails.length >= 2);
+}
+function visiblePackages() {
+  return PACKAGES.filter((p) => S.planArea === "all" || p.sub === S.planArea);
+}
+function currentPackage() {
+  const list = visiblePackages();
+  if (!list.length) return null;
+  if (S.pkgIndex >= list.length) S.pkgIndex = 0;
+  return list[S.pkgIndex];
+}
+function inPlanArea(x) {
+  return x.area === "south" && (S.planArea === "all" || x.subarea === S.planArea);
+}
 
 function family() { return getFamilyState(); }
 function trips() { const f = family(); return f.family ? f.trips : null; }
@@ -74,8 +136,9 @@ function driveText(place) {
 /* ---------------- filters ---------------- */
 function matches(t) {
   const f = S.filters;
+  if (S.mode === "plan" && !inPlanArea(t)) return false;
   const month = new Date().getMonth() + 1;
-  if (f.has("near")) { const d = driveOf(t); if (d == null || d > 45) return false; }
+  if (f.has("near") && S.mode !== "plan") { const d = driveOf(t); if (d == null || d > 45) return false; }
   if (f.has("short") && !(t.km != null && t.km <= 3)) return false;
   if (f.has("stroller") && t.stroller !== "yes") return false;
   if (f.has("water") && !["view", "wading", "sea"].includes(t.water)) return false;
@@ -143,11 +206,22 @@ function renderMarkers() {
       .bindTooltip(S.origin.name, { permanent: false, direction: "top" }).addTo(markerLayer);
   }
 
+  const pkg = S.mode === "plan" && S.pkgActive ? currentPackage() : null;
+  const pkgIds = pkg ? new Set(pkg.trails.map((x) => x.t.id)) : null;
+  if (pkg) {
+    for (const x of pkg.trails) {
+      L.polyline([[pkg.lodging.lat, pkg.lodging.lng], [x.t.lat, x.t.lng]], { color: "#5E4A8E", weight: 3, opacity: 0.75, dashArray: "6 7", interactive: false }).addTo(markerLayer);
+      L.marker([(pkg.lodging.lat + x.t.lat) / 2, (pkg.lodging.lng + x.t.lng) / 2], {
+        icon: L.divIcon({ className: "", html: `<span class="line-label">~${x.min} דק'</span>`, iconSize: [0, 0] }), interactive: false, keyboard: false,
+      }).addTo(markerLayer);
+    }
+  }
   let shown = 0;
   for (const t of cat.trails) {
-    const ok = matches(t);
+    if (S.mode === "plan" && t.area !== "south") continue;
+    const ok = matches(t) && (!pkgIds || pkgIds.has(t.id));
     if (ok) shown++;
-    const isRec = rec && rec.trail.id === t.id && !S.filters.size && !S.query;
+    const isRec = S.mode !== "plan" && rec && rec.trail.id === t.id && !S.filters.size && !S.query;
     const sel = S.selected && S.selected.kind === "trail" && S.selected.id === t.id;
     const cls = `pin ${isRec ? "pin--rec" : ""} ${ok ? "" : "pin--muted"} ${sel ? "pin--selected" : ""}`;
     const m = L.marker([t.lat, t.lng], {
@@ -159,11 +233,13 @@ function renderMarkers() {
     m.addTo(markerLayer);
     markers.set(`trail:${t.id}`, m);
   }
-  if (S.layers.has("lodging")) {
+  if (S.layers.has("lodging") || S.mode === "plan") {
     for (const p of cat.lodging) {
       if (!matchesText(p) || p.lat == null) continue;
-      const sel = S.selected && S.selected.kind === "lodging" && S.selected.id === p.id;
-      const m = L.marker([p.lat, p.lng], { icon: pinIcon(`pin pin--lodging ${sel ? "pin--selected" : ""}`), title: p.name, alt: p.name });
+      if (S.mode === "plan" && !inPlanArea(p)) continue;
+      const sel = (S.selected && S.selected.kind === "lodging" && S.selected.id === p.id) || (pkg && pkg.lodging.id === p.id);
+      const big = S.mode === "plan";
+      const m = L.marker([p.lat, p.lng], { icon: pinIcon(`pin pin--lodging ${big ? "pin--lodging-big" : ""} ${sel ? "pin--selected" : ""} ${pkg && !sel ? "pin--muted" : ""}`, big ? "⌂" : "", big ? 30 : undefined), title: p.name, alt: p.name, zIndexOffset: sel ? 900 : 200 });
       m.bindTooltip(esc(p.name), { direction: "top", offset: [0, -10] });
       m.on("click", (e) => { L.DomEvent.stopPropagation(e); select("lodging", p.id); });
       m.addTo(markerLayer);
@@ -179,7 +255,7 @@ function renderMarkers() {
     }
   }
   const active = S.filters.size || S.query;
-  $("#resultCount").textContent = active ? `${shown} מסלולים מתאימים` : "";
+  $("#resultCount").textContent = S.mode === "plan" ? "" : active ? `${shown} מסלולים מתאימים` : "";
 }
 
 function select(kind, id) {
@@ -198,8 +274,16 @@ function dockPadding() {
 }
 function fitAll() {
   if (!map) return;
-  const pts = S.catalog.trails.map((t) => [t.lat, t.lng]);
-  if (S.origin) pts.push([S.origin.lat, S.origin.lng]);
+  let pts;
+  if (S.mode === "plan") {
+    const pkg = S.pkgActive && currentPackage();
+    pts = pkg ? [[pkg.lodging.lat, pkg.lodging.lng], ...pkg.trails.map((x) => [x.t.lat, x.t.lng])]
+      : [...S.catalog.trails, ...S.catalog.lodging].filter((x) => x.lat != null && inPlanArea(x)).map((x) => [x.lat, x.lng]);
+  } else {
+    pts = S.catalog.trails.filter((t) => t.area !== "south").map((t) => [t.lat, t.lng]);
+    if (S.origin) pts.push([S.origin.lat, S.origin.lng]);
+  }
+  if (!pts.length) return;
   map.fitBounds(L.latLngBounds(pts), { ...dockPadding(), maxZoom: 11 });
 }
 function focusOn(place) {
@@ -217,8 +301,9 @@ function focusOn(place) {
 let ranked = [];
 function computeRec() {
   const date = nextSaturday();
-  ranked = rankTrails(S.catalog.trails, { date, driveOf, trips: trips() }).filter((r) => r.trail.months.includes(date.getMonth() + 1));
-  if (!ranked.length) ranked = rankTrails(S.catalog.trails, { date, driveOf, trips: trips() });
+  const dayTrips = S.catalog.trails.filter((t) => { const d = driveOf(t); return d == null || d <= 100; });
+  ranked = rankTrails(dayTrips, { date, driveOf, trips: trips() }).filter((r) => r.trail.months.includes(date.getMonth() + 1));
+  if (!ranked.length) ranked = rankTrails(dayTrips, { date, driveOf, trips: trips() });
   if (S.recIndex >= ranked.length) S.recIndex = 0;
 }
 function currentRec() { return ranked[S.recIndex] || null; }
@@ -227,6 +312,7 @@ function currentRec() { return ranked[S.recIndex] || null; }
 function renderDock() {
   const dock = $("#dock");
   if (S.selected) { dock.innerHTML = peekHTML(); bindPeek(dock); return; }
+  if (S.mode === "plan") { renderPlanDock(dock); return; }
   const r = currentRec();
   if (!r) { dock.innerHTML = ""; return; }
   const t = r.trail;
@@ -267,6 +353,118 @@ function renderDock() {
   dock.querySelector('[data-act="collapse"]').addEventListener("click", () => { S.recCollapsed = !S.recCollapsed; renderDock(); });
 }
 
+function pkgTrailsHTML(pkg, compact = false) {
+  if (compact) {
+    return `<div class="pkg__chips">${pkg.trails.map((x) => `
+      <button type="button" class="pkg__chip" data-trail="${x.t.id}">
+        ${thumbHTML(x.t, "pkg__chipimg")}
+        <span class="pkg__chipname">${esc(x.t.name.split(" – ")[0])}</span>
+        <span class="pkg__chipmeta">~${x.min} דק' · ${x.t.km != null ? `${x.t.km} ק"מ` : ""}</span>
+      </button>`).join("")}</div>`;
+  }
+  return pkg.trails.map((x) => `
+    <button type="button" class="pkg__trail" data-trail="${x.t.id}">
+      ${thumbHTML(x.t, "pkg__thumb")}
+      <span class="pkg__ttext">
+        <span class="pkg__tname">${esc(x.t.name)}</span>
+        <span class="pkg__tmeta">~${x.min} דק' מהלינה · ${x.t.km != null ? `${x.t.km} ק"מ` : esc(x.t.length_text)} · ${esc(x.t.difficulty_text)}</span>
+      </span>
+    </button>`).join("");
+}
+function renderPlanDock(dock) {
+  const list = visiblePackages();
+  const pkg = currentPackage();
+  if (!pkg) {
+    dock.innerHTML = `<article class="peek"><strong>אין עדיין הצעות לסופ"ש באזור הזה.</strong><span class="peek__meta">נסו "כל הדרום".</span></article>`;
+    return;
+  }
+  const l = pkg.lodging;
+  dock.innerHTML = `
+    <article class="pkg" aria-labelledby="pkgTitle">
+      <div class="pkg__top">
+        <div class="pkg__label">סופ"ש מוכן · ${S.pkgIndex + 1}/${list.length}</div>
+        <div class="row" style="width:auto;gap:6px">
+          <button type="button" class="pkg__nav" data-act="prev" aria-label="הקודם">‹</button>
+          <button type="button" class="pkg__nav" data-act="next" aria-label="הבא">›</button>
+        </div>
+      </div>
+      <button type="button" class="pkg__lodging" data-act="lodging">
+        ${thumbHTML(l, "pkg__lthumb")}
+        <span>
+          <span class="pkg__kind">${esc(LABEL.lodgingType[l.type] || l.kind_text)} · ${esc(l.region)}</span>
+          <h2 class="pkg__title" id="pkgTitle">${esc(l.name)}</h2>
+          <span class="pkg__meta">${esc(l.drive_text)} מהבית · ${esc(l.price_text.split("·")[0])}</span>
+        </span>
+      </button>
+      ${pkgTrailsHTML(pkg, true)}
+      <div class="rec__actions">
+        <button type="button" class="btn btn--primary btn--grow" data-act="open">לפרטי הסופ"ש</button>
+        <button type="button" class="btn btn--outline" data-act="map">${S.pkgActive ? "כל המפה" : "הצג במפה"}</button>
+      </div>
+    </article>`;
+  const go = (d) => { S.pkgIndex = (S.pkgIndex + d + list.length) % list.length; S.pkgActive = true; renderDock(); renderMarkers(); fitAll(); };
+  dock.querySelector('[data-act="prev"]').addEventListener("click", () => go(-1));
+  dock.querySelector('[data-act="next"]').addEventListener("click", () => go(1));
+  dock.querySelector('[data-act="open"]').addEventListener("click", () => openPackage(pkg));
+  dock.querySelector('[data-act="lodging"]').addEventListener("click", () => openLodging(l.id));
+  dock.querySelector('[data-act="map"]').addEventListener("click", () => { S.pkgActive = !S.pkgActive; renderDock(); renderMarkers(); fitAll(); });
+  $$("[data-trail]", dock).forEach((b) => b.addEventListener("click", () => openTrail(b.dataset.trail)));
+}
+
+function openPackage(pkg) {
+  const l = pkg.lodging;
+  openSheet(`
+    <article aria-labelledby="sheetTitle">
+      ${heroHTML(l, `<span class="tag tag--violet card__tag">סופ"ש מוכן</span>`)}
+      <div class="card__body">
+        <div>
+          <h2 class="card__title" id="sheetTitle">סופ"ש ב${esc(l.region)}</h2>
+          <div class="card__sub">לינה ב${esc(l.name)} + ${pkg.trails.length} מסלולים · ${pkg.km ? `${pkg.km} ק"מ הליכה בסך הכול` : ""}</div>
+        </div>
+        <section class="box">
+          <h3 class="box__title">איפה ישנים</h3>
+          <button type="button" class="pkg__lodging" data-lodging="${l.id}" style="background:var(--bg)">
+            ${thumbHTML(l, "pkg__lthumb")}
+            <span>
+              <span class="pkg__kind">${esc(LABEL.lodgingType[l.type] || l.kind_text)} · ${esc(l.drive_text)} מהבית</span>
+              <span class="pkg__title" style="display:block">${esc(l.name)}</span>
+              <span class="pkg__meta">${esc(l.unit_text)} · ${esc(l.price_text)}</span>
+            </span>
+          </button>
+        </section>
+        <section class="box">
+          <h3 class="box__title">מה עושים</h3>
+          <div class="pkg__trails">${pkgTrailsHTML(pkg)}</div>
+          <p class="meta-note" style="margin:6px 0 0">זמני הנסיעה מהלינה משוערים.</p>
+        </section>
+        ${l.note ? `<div class="callout"><strong>שימו לב: </strong>${esc(l.note)}</div>` : ""}
+      </div>
+      <div class="card__actions">
+        <button type="button" class="btn btn--primary btn--grow" data-act="showmap">הצג במפה</button>
+        ${l.website ? `<a class="btn btn--outline" href="${esc(l.website)}" target="_blank" rel="noopener">להזמנת לינה</a>` : ""}
+        <button type="button" class="btn btn--outline" data-act="share">שתף</button>
+      </div>
+    </article>`, (panel) => {
+    $$("[data-trail]", panel).forEach((b) => b.addEventListener("click", () => openTrail(b.dataset.trail)));
+    panel.querySelector("[data-lodging]").addEventListener("click", () => openLodging(l.id));
+    panel.querySelector('[data-act="showmap"]').addEventListener("click", () => {
+      closeSheet();
+      S.planArea = "all"; S.pkgIndex = Math.max(0, visiblePackages().indexOf(pkg)); S.pkgActive = true;
+      setMode("plan");
+    });
+    panel.querySelector('[data-act="share"]').addEventListener("click", () => share(`סופ"ש ב${l.region}`,
+      `סופ"ש ב${l.region}: לינה ב${l.name} + ${pkg.trails.map((x) => x.t.name).join(", ")}`, location.href.split("#")[0]));
+  });
+}
+
+function nearListHTML(items, kind) {
+  if (!items.length) return "";
+  return `<ul class="near">${items.map((x) => {
+    const p = x.t || x.l;
+    return `<li><button type="button" class="near__item" data-${kind}="${p.id}">${thumbHTML(p, "near__thumb")}<span class="near__name">${esc(p.name)}</span><span class="near__min">~${x.min} דק'</span></button></li>`;
+  }).join("")}</ul>`;
+}
+
 function peekHTML() {
   const { kind, id } = S.selected;
   const cat = S.catalog;
@@ -290,6 +488,7 @@ function peekHTML() {
           ${t.water === "wading" ? '<span class="tag">שכשוך</span>' : ""}
           ${done ? '<span class="tag tag--done">עשינו ✓</span>' : ""}
         </div>
+        ${S.mode === "plan" ? (() => { const n = nearbyLodging(t, 60); return n.length ? `<div class="peek__near"><div class="peek__kind">לינה קרובה</div>${nearListHTML(n.slice(0, 2), "lodging")}</div>` : ""; })() : ""}
         <button type="button" class="btn btn--primary" data-act="open">פתח כרטיס</button>
       </article>`;
   }
@@ -302,11 +501,12 @@ function peekHTML() {
           <div class="peek__text">
             <div class="peek__kind">${esc(LABEL.lodgingType[p.type] || p.kind_text)} · ${esc(p.region)}</div>
             <h2 class="peek__title" id="peekTitle">${esc(p.name)}</h2>
-            <div class="peek__meta">${esc(p.drive_text)} · ${esc(p.price_text)}</div>
+            <div class="peek__meta">${esc(p.drive_text)} · ${esc(p.price_text.split("·")[0])}</div>
           </div>
           <button type="button" class="peek__close" data-act="close" aria-label="סגור">${icon.x}</button>
         </div>
-        <button type="button" class="btn btn--primary" data-act="open">פרטים</button>
+        ${(() => { const n = nearbyTrails(p, 45); return n.length ? `<div class="peek__near"><div class="peek__kind">מסלולים עד 45 דק' מכאן (${n.length})</div>${nearListHTML(n.slice(0, 3), "trail")}</div>` : ""; })()}
+        <button type="button" class="btn btn--primary" data-act="open">פרטים ומסלולים בסביבה</button>
       </article>`;
   }
   const a = cat.activities.find((x) => x.id === id);
@@ -325,6 +525,8 @@ function peekHTML() {
     </article>`;
 }
 function bindPeek(dock) {
+  $$("[data-trail]", dock).forEach((b) => b.addEventListener("click", () => openTrail(b.dataset.trail)));
+  $$("[data-lodging]", dock).forEach((b) => b.addEventListener("click", () => openLodging(b.dataset.lodging)));
   dock.querySelector('[data-act="close"]').addEventListener("click", () => { S.selected = null; renderDock(); renderMarkers(); });
   dock.querySelector('[data-act="open"]').addEventListener("click", () => {
     const { kind, id } = S.selected;
@@ -424,6 +626,7 @@ function openTrail(id) {
         </section>
         ${t.poi ? `<p class="meta-note" style="font-size:14px;margin:0"><strong>נקודות עניין:</strong> ${esc(t.poi)}</p>` : ""}
         ${t.check ? `<div class="callout"><strong>לבדוק לפני: </strong>${esc(t.check)}</div>` : ""}
+        ${t.area === "south" ? (() => { const n = nearbyLodging(t, 60).slice(0, 4); return n.length ? `<section class="box"><h3 class="box__title">לינה בסביבה</h3>${nearListHTML(n, "lodging")}</section>` : ""; })() : ""}
         ${familyBlock}
       </div>
       <div class="card__actions">
@@ -435,6 +638,7 @@ function openTrail(id) {
     panel.querySelector('[data-act="share"]').addEventListener("click", () => share(t.name, `${t.name} – ${t.region}`, wazeUrl(t)));
     panel.querySelector('[data-act="showmap"]').addEventListener("click", () => { closeSheet(); setView("map"); select("trail", t.id); focusOn(t); });
     panel.querySelector('[data-act="signin"]')?.addEventListener("click", doSignIn);
+    $$("[data-lodging]", panel).forEach((b) => b.addEventListener("click", () => openLodging(b.dataset.lodging)));
     const doneBtn = panel.querySelector('[data-act="done"]');
     if (doneBtn) {
       doneBtn.addEventListener("click", async () => {
@@ -479,13 +683,16 @@ function openLodging(id) {
           </dl>
         </section>
         ${p.note ? `<div class="callout"><strong>שימו לב: </strong>${esc(p.note)}</div>` : ""}
+        ${(() => { const n = nearbyTrails(p, 60).slice(0, 6); return n.length ? `<section class="box"><h3 class="box__title">מסלולים בסביבה</h3>${nearListHTML(n, "trail")}<p class="meta-note" style="margin:6px 0 0">זמני נסיעה משוערים מהלינה.</p></section>` : ""; })()}
       </div>
       <div class="card__actions">
         <a class="btn btn--primary btn--grow" href="${wazeUrl(p)}" target="_blank" rel="noopener">נווט ב-Waze</a>
         ${p.phone ? `<a class="btn btn--outline" href="tel:${esc(p.phone.replace(/[^0-9+]/g, ""))}">התקשר</a>` : ""}
         ${p.website ? `<a class="btn btn--outline" href="${esc(p.website)}" target="_blank" rel="noopener">לאתר המקום</a>` : ""}
       </div>
-    </article>`);
+    </article>`, (panel) => {
+    $$("[data-trail]", panel).forEach((b) => b.addEventListener("click", () => openTrail(b.dataset.trail)));
+  });
 }
 
 function openActivity(id) {
@@ -555,14 +762,25 @@ function renderLodging() {
 }
 
 function renderPlan() {
-  $("#viewPlan").innerHTML = `
-    <div class="empty">
-      <h3>תכנון מראש – בקרוב</h3>
-      <p style="margin:0">כאן תוכלו לתכנן יום טיול או סופ"ש של 2–3 ימים: לבחור אזור ותאריכים, לקבל הצעה למסלולים ולינה, ולשמור ליומן.</p>
-      <p style="margin:0">בינתיים: המפה בכפתור "ספונטני", ורשימת החאנים והחניונים בלשונית "לינה".</p>
-      <button type="button" class="btn btn--outline" data-goto="lodging">ללשונית לינה</button>
+  const el = $("#viewPlan");
+  const groups = AREAS.filter(([k]) => k !== "all").map(([k, label]) => [label, PACKAGES.filter((p) => p.sub === k)]).filter(([, l]) => l.length);
+  el.innerHTML = `
+    <div>
+      <div class="list-head"><h1 class="list-title">סופי שבוע מוכנים</h1><span class="tag tag--amber">בטא · דרום</span></div>
+      <p class="meta-note" style="margin:-4px 0 14px;font-size:14px">כל הצעה = מקום לינה + 2–3 מסלולים קרובים אליו, לפי העונה. רוצים לבנות לבד? <button type="button" class="linkbtn" data-act="planmap">לתכנון במפה</button></p>
+      ${groups.map(([label, list]) => `
+        <h2 class="group-title">${esc(label)}</h2>
+        <ul class="list">${list.map((pkg) => `
+          <li><button type="button" class="item${pkg.lodging.photo ? " has-photo" : ""}" data-pkg="${pkg.id}">
+            ${thumbHTML(pkg.lodging, "item__img")}
+            <span class="item__top"><span class="tag tag--violet">${esc(LABEL.lodgingType[pkg.lodging.type] || "")}</span><span>${esc(pkg.lodging.drive_text)} מהבית</span></span>
+            <span class="item__title">${esc(pkg.lodging.name)}</span>
+            <span class="item__text">${pkg.trails.map((x) => esc(x.t.name)).join(" · ")}</span>
+            <span class="item__bottom"><strong>${pkg.trails.length} מסלולים${pkg.km ? ` · ${pkg.km} ק"מ` : ""}</strong><span>${esc(pkg.lodging.price_text.split("·")[0])}</span></span>
+          </button></li>`).join("")}</ul>`).join("")}
     </div>`;
-  $("#viewPlan [data-goto]").addEventListener("click", () => setView("lodging"));
+  $$("[data-pkg]", el).forEach((b) => b.addEventListener("click", () => openPackage(PACKAGES.find((p) => p.id === b.dataset.pkg))));
+  el.querySelector('[data-act="planmap"]').addEventListener("click", () => setMode("plan"));
 }
 
 function renderMine() {
@@ -678,25 +896,50 @@ function setView(v) {
   $("#viewMine").hidden = v !== "mine";
   $("#viewPlan").hidden = v !== "plan";
   $$(".tab").forEach((t) => (t.dataset.view === v ? t.setAttribute("aria-current", "page") : t.removeAttribute("aria-current")));
-  $$(".seg__btn").forEach((b) => b.setAttribute("aria-pressed", (b.dataset.mode === "plan") === (v === "plan")));
+  $$(".seg__btn").forEach((b) => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
   $("#chips").hidden = v !== "map";
+  $("#planChips").hidden = v !== "map" || S.mode !== "plan";
+  $('[data-filter="near"]').hidden = S.mode === "plan";
   if (v === "lodging") renderLodging();
   if (v === "mine") renderMine();
   if (v === "plan") renderPlan();
   if (v === "map" && map) setTimeout(() => map.invalidateSize(), 0);
 }
 
+function setMode(m) {
+  S.mode = m;
+  S.selected = null;
+  if (m !== "plan") S.pkgActive = false;
+  document.body.dataset.mode = m;
+  renderPlanChips();
+  setView("map");
+  renderMarkers(); renderDock();
+  requestAnimationFrame(() => fitAll());
+}
+function renderPlanChips() {
+  const el = $("#planChips");
+  el.innerHTML = AREAS.map(([k, l]) => `<button type="button" class="chip chip--area" data-area="${k}" aria-pressed="${S.planArea === k}">${l}</button>`).join("");
+}
+
 function refreshAll() {
   computeRec();
+  buildPackages();
   renderMarkers();
   renderDock();
   if (S.view === "mine") renderMine();
   if (S.view === "lodging") renderLodging();
+  if (S.view === "plan") renderPlan();
 }
 
 function wire() {
   $$(".tab").forEach((t) => t.addEventListener("click", () => setView(t.dataset.view)));
-  $$(".seg__btn").forEach((b) => b.addEventListener("click", () => setView(b.dataset.mode === "plan" ? "plan" : "map")));
+  $$(".seg__btn").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode === "plan" ? "plan" : "spontaneous")));
+  $("#planChips").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-area]");
+    if (!b) return;
+    S.planArea = b.dataset.area; S.pkgIndex = 0; S.pkgActive = false; S.selected = null;
+    renderPlanChips(); renderMarkers(); renderDock(); fitAll();
+  });
   $("#chips").addEventListener("click", (e) => {
     const b = e.target.closest("[data-filter]");
     if (!b) return;
