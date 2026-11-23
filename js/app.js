@@ -1,4 +1,4 @@
-import { rankTrails, nextSaturday, formatDay } from "./recommend.js?v=5";
+import { rankTrails, nextSaturday, formatDay } from "./recommend.js?v=6";
 // Family features load separately, so the map still works if sign-in can't load.
 let FAM = null;
 const NO_FAMILY = { user: null, family: null, trips: {}, ready: true };
@@ -68,8 +68,9 @@ const AREAS = [
 ];
 // Rough road time between two points: straight line × 1.35, ~60 km/h average.
 function minutesBetween(a, b) {
-  const km = haversineKm(a, b) * 1.35;
-  return Math.max(5, Math.round(km / 60 * 60 / 5) * 5);
+  // desert roads wind and include access tracks: ×1.5, ~55 km/h, +5 min to park
+  const km = haversineKm(a, b) * 1.5;
+  return Math.max(10, Math.round((km / 55 * 60 + 5) / 5) * 5);
 }
 function nearbyTrails(place, max = 60) {
   return S.catalog.trails
