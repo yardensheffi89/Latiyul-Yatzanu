@@ -58,6 +58,7 @@ const S = {
   planArea: "all",         // subarea filter in plan mode
   pkgIndex: 0,
   pkgActive: false,        // draw the current weekend package on the map
+  pkgCollapsed: false,
 };
 
 /* ---------------- planning helpers ---------------- */
@@ -380,10 +381,11 @@ function renderPlanDock(dock) {
   }
   const l = pkg.lodging;
   dock.innerHTML = `
-    <article class="pkg" aria-labelledby="pkgTitle">
+    <article class="pkg ${S.pkgCollapsed ? "is-collapsed" : ""}" aria-labelledby="pkgTitle">
       <div class="pkg__top">
         <div class="pkg__label">סופ"ש מוכן · ${S.pkgIndex + 1}/${list.length}</div>
         <div class="row" style="width:auto;gap:6px">
+          <button type="button" class="pkg__nav" data-act="collapse" aria-label="${S.pkgCollapsed ? "הרחב" : "כווץ"}" aria-expanded="${!S.pkgCollapsed}" style="transform:rotate(${S.pkgCollapsed ? 180 : 0}deg)">${icon.chevron}</button>
           <button type="button" class="pkg__nav" data-act="prev" aria-label="הקודם">‹</button>
           <button type="button" class="pkg__nav" data-act="next" aria-label="הבא">›</button>
         </div>
@@ -397,12 +399,13 @@ function renderPlanDock(dock) {
         </span>
       </button>
       ${pkgTrailsHTML(pkg, true)}
-      <div class="rec__actions">
+      <div class="rec__actions pkg__actions">
         <button type="button" class="btn btn--primary btn--grow" data-act="open">לפרטי הסופ"ש</button>
-        <button type="button" class="btn btn--outline" data-act="map">${S.pkgActive ? "כל המפה" : "הצג במפה"}</button>
+        <button type="button" class="btn btn--outline" data-act="map">${S.pkgActive ? "כל האזור" : "רק הסופ\"ש"}</button>
       </div>
     </article>`;
   const go = (d) => { S.pkgIndex = (S.pkgIndex + d + list.length) % list.length; S.pkgActive = true; renderDock(); renderMarkers(); fitAll(); };
+  dock.querySelector('[data-act="collapse"]').addEventListener("click", () => { S.pkgCollapsed = !S.pkgCollapsed; renderDock(); requestAnimationFrame(fitAll); });
   dock.querySelector('[data-act="prev"]').addEventListener("click", () => go(-1));
   dock.querySelector('[data-act="next"]').addEventListener("click", () => go(1));
   dock.querySelector('[data-act="open"]').addEventListener("click", () => openPackage(pkg));
@@ -909,7 +912,7 @@ function setView(v) {
 function setMode(m) {
   S.mode = m;
   S.selected = null;
-  if (m !== "plan") S.pkgActive = false;
+  S.pkgActive = m === "plan";
   document.body.dataset.mode = m;
   renderPlanChips();
   setView("map");
@@ -937,7 +940,7 @@ function wire() {
   $("#planChips").addEventListener("click", (e) => {
     const b = e.target.closest("[data-area]");
     if (!b) return;
-    S.planArea = b.dataset.area; S.pkgIndex = 0; S.pkgActive = false; S.selected = null;
+    S.planArea = b.dataset.area; S.pkgIndex = 0; S.pkgActive = true; S.selected = null;
     renderPlanChips(); renderMarkers(); renderDock(); fitAll();
   });
   $("#chips").addEventListener("click", (e) => {
