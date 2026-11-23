@@ -11,7 +11,7 @@ photos = json.loads((root / "data/photos.json").read_text())
 # Official websites only. RTG campsites: the parks.org.il page is the official one.
 WEBSITE = {
     "L01": "https://www.parks.org.il/camping/חניון-לילה-גן-לאומי-ממשית-החאן-הנבטי",
-    "L02": None,  # no official site found — call by phone
+    "L02": "https://www.shayarot.co.il/",
     "L03": "https://www.kfarhanokdim.co.il/",
     "L04": "https://beerotayim.co.il/",
     "L05": "https://www.parks.org.il/camping/חניון-לילה-גן-לאומי-חורשת-טל/",
