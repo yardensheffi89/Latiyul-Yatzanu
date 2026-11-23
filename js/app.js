@@ -1,4 +1,4 @@
-import { rankTrails, nextSaturday, formatDay } from "./recommend.js";
+import { rankTrails, nextSaturday, formatDay } from "./recommend.js?v=5";
 // Family features load separately, so the map still works if sign-in can't load.
 let FAM = null;
 const NO_FAMILY = { user: null, family: null, trips: {}, ready: true };
