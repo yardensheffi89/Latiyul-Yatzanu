@@ -241,7 +241,7 @@ function renderDock() {
             style="transform:rotate(${S.recCollapsed ? 180 : 0}deg)">${icon.chevron}</button>
         </div>
       </div>
-      <h2 class="rec__title" id="recTitle">${esc(t.name)}</h2>
+      <div class="rec__head">${thumbHTML(t, "rec__thumb")}<h2 class="rec__title" id="recTitle">${esc(t.name)}</h2></div>
       <div class="rec__body" style="display:${S.recCollapsed ? "none" : "flex"};flex-direction:column;gap:10px">
         <div>
           <div class="rec__why-label">למה דווקא עכשיו</div>
@@ -276,7 +276,8 @@ function peekHTML() {
     return `
       <article class="peek" aria-labelledby="peekTitle">
         <div class="peek__head">
-          <div>
+          ${thumbHTML(t, "peek__thumb")}
+          <div class="peek__text">
             <div class="peek__kind">מסלול · ${esc(t.region)}</div>
             <h2 class="peek__title" id="peekTitle">${esc(t.name)}</h2>
             <div class="peek__meta">${esc(driveText(t))} נסיעה · ${t.km != null ? `${t.km} ק"מ · ` : ""}${esc(LABEL.route[t.route] || "")}</div>
@@ -297,7 +298,8 @@ function peekHTML() {
     return `
       <article class="peek" aria-labelledby="peekTitle">
         <div class="peek__head">
-          <div>
+          ${thumbHTML(p, "peek__thumb")}
+          <div class="peek__text">
             <div class="peek__kind">${esc(LABEL.lodgingType[p.type] || p.kind_text)} · ${esc(p.region)}</div>
             <h2 class="peek__title" id="peekTitle">${esc(p.name)}</h2>
             <div class="peek__meta">${esc(p.drive_text)} · ${esc(p.price_text)}</div>
@@ -311,7 +313,8 @@ function peekHTML() {
   return `
     <article class="peek" aria-labelledby="peekTitle">
       <div class="peek__head">
-        <div>
+        ${thumbHTML(a, "peek__thumb")}
+        <div class="peek__text">
           <div class="peek__kind">פעילות · ${esc(a.operator)}</div>
           <h2 class="peek__title" id="peekTitle">${esc(a.name)}</h2>
           <div class="peek__meta">${esc(a.when_text)}</div>
@@ -354,9 +357,17 @@ function attr(label, value) {
   return `<dt>${esc(label)}</dt><dd class="${unknown && !value ? "unknown" : ""}">${esc(value || "לא ידוע")}</dd>`;
 }
 function wazeUrl(p) { return `https://waze.com/ul?ll=${p.lat},${p.lng}&navigate=yes`; }
-function sourcesHTML(p) {
-  const links = (p.sources || []).map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">מקור ${i + 1}</a>`).join(" · ");
-  return `<p class="meta-note">${links ? `${links} · ` : ""}${esc(p.reliability || "")} · נבדק ${esc(p.checked || "")}${p.estimated ? ` · הערכה: ${esc(p.estimated)}` : ""}</p>`;
+function heroHTML(p, tag = "") {
+  const ph = p.photo;
+  return `<div class="card__hero${ph ? " has-photo" : ""}">
+        ${ph ? `<img class="card__img" src="${esc(ph.url)}" alt="" loading="eager" decoding="async" onerror="this.remove()">` : ""}
+        <button type="button" class="card__x" data-close aria-label="סגור">${icon.x}</button>
+        ${tag}
+        ${ph ? `<a class="card__credit" href="${esc(ph.page)}" target="_blank" rel="noopener">צילום: ${esc(ph.credit)}</a>` : ""}
+      </div>`;
+}
+function thumbHTML(p, cls = "thumb") {
+  return p && p.photo ? `<img class="${cls}" src="${esc(p.photo.url)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : "";
 }
 
 function openTrail(id) {
@@ -379,10 +390,7 @@ function openTrail(id) {
 
   openSheet(`
     <article aria-labelledby="sheetTitle">
-      <div class="card__hero">
-        <button type="button" class="card__x" data-close aria-label="סגור">${icon.x}</button>
-        <span class="card__hero-note">תמונות יתווספו בהמשך</span>
-      </div>
+      ${heroHTML(t)}
       <div class="card__body">
         <div>
           <h2 class="card__title" id="sheetTitle">${esc(t.name)}</h2>
@@ -417,7 +425,6 @@ function openTrail(id) {
         ${t.poi ? `<p class="meta-note" style="font-size:14px;margin:0"><strong>נקודות עניין:</strong> ${esc(t.poi)}</p>` : ""}
         ${t.check ? `<div class="callout"><strong>לבדוק לפני: </strong>${esc(t.check)}</div>` : ""}
         ${familyBlock}
-        ${sourcesHTML(t)}
       </div>
       <div class="card__actions">
         <a class="btn btn--primary btn--grow" href="${wazeUrl(t)}" target="_blank" rel="noopener">נווט ב-Waze</a>
@@ -452,10 +459,7 @@ function openLodging(id) {
   const p = S.catalog.lodging.find((x) => x.id === id);
   openSheet(`
     <article aria-labelledby="sheetTitle">
-      <div class="card__hero">
-        <button type="button" class="card__x" data-close aria-label="סגור">${icon.x}</button>
-        <span class="tag tag--violet">${esc(LABEL.lodgingType[p.type] || p.kind_text)}</span>
-      </div>
+      ${heroHTML(p, `<span class="tag tag--violet card__tag">${esc(LABEL.lodgingType[p.type] || p.kind_text)}</span>`)}
       <div class="card__body">
         <div>
           <h2 class="card__title" id="sheetTitle">${esc(p.name)}</h2>
@@ -475,12 +479,11 @@ function openLodging(id) {
           </dl>
         </section>
         ${p.note ? `<div class="callout"><strong>שימו לב: </strong>${esc(p.note)}</div>` : ""}
-        ${sourcesHTML(p)}
       </div>
       <div class="card__actions">
         <a class="btn btn--primary btn--grow" href="${wazeUrl(p)}" target="_blank" rel="noopener">נווט ב-Waze</a>
         ${p.phone ? `<a class="btn btn--outline" href="tel:${esc(p.phone.replace(/[^0-9+]/g, ""))}">התקשר</a>` : ""}
-        ${p.sources[0] ? `<a class="btn btn--outline" href="${esc(p.sources[0])}" target="_blank" rel="noopener">לאתר</a>` : ""}
+        ${p.website ? `<a class="btn btn--outline" href="${esc(p.website)}" target="_blank" rel="noopener">לאתר המקום</a>` : ""}
       </div>
     </article>`);
 }
@@ -490,10 +493,7 @@ function openActivity(id) {
   const sat = { yes: "כן", no: "לא", unknown: "לבדוק" }[a.saturday] || "לבדוק";
   openSheet(`
     <article aria-labelledby="sheetTitle">
-      <div class="card__hero">
-        <button type="button" class="card__x" data-close aria-label="סגור">${icon.x}</button>
-        <span class="tag tag--blue">פעילות</span>
-      </div>
+      ${heroHTML(a, `<span class="tag tag--blue card__tag">פעילות</span>`)}
       <div class="card__body">
         <div>
           <h2 class="card__title" id="sheetTitle">${esc(a.name)}</h2>
@@ -512,11 +512,10 @@ function openActivity(id) {
         </section>
         <ul class="why">${a.why.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>
         ${a.check ? `<div class="callout"><strong>לבדוק: </strong>${esc(a.check)}</div>` : ""}
-        ${sourcesHTML(a)}
       </div>
       <div class="card__actions">
         <a class="btn btn--primary btn--grow" href="${wazeUrl(a)}" target="_blank" rel="noopener">נווט ב-Waze</a>
-        ${a.sources[0] ? `<a class="btn btn--outline" href="${esc(a.sources[0])}" target="_blank" rel="noopener">מקור</a>` : ""}
+        ${a.website ? `<a class="btn btn--outline" href="${esc(a.website)}" target="_blank" rel="noopener">לפרטים והרשמה</a>` : ""}
       </div>
     </article>`);
 }
@@ -542,7 +541,8 @@ function renderLodging() {
         ${kinds.map(([k, l]) => `<button type="button" class="chip" data-kind="${k}" aria-pressed="${cur === k}">${l}</button>`).join("")}
       </div>
       ${items.length ? `<ul class="list">${items.map((p) => `
-        <li><button type="button" class="item" data-id="${p.id}">
+        <li><button type="button" class="item${p.photo ? " has-photo" : ""}" data-id="${p.id}">
+          ${thumbHTML(p, "item__img")}
           <span class="item__top"><span class="tag ${p.type === "khan" ? "tag--amber" : p.type === "field_school" ? "tag--violet" : ""}">${esc(LABEL.lodgingType[p.type] || p.kind_text)}</span><span>${esc(p.drive_text)}</span></span>
           <span class="item__title">${esc(p.name)}</span>
           <span class="item__text">${esc(p.unit_text)} · ${esc(p.climate_text)} · ${esc(p.food_text)}</span>

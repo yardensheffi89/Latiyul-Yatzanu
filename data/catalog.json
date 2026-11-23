@@ -33,13 +33,6 @@
    "check": null,
    "lat": 32.553,
    "lng": 34.947,
-   "sources": [
-    "https://meyda.education.gov.il/files/Pop/0files/special-education/Accessible-hiking-trails.pdf",
-    "https://pop.education.gov.il/metaylim-im-tchumei-daat/kol-hatiyulim/ramat-anadiv-eintzur/"
-   ],
-   "reliability": "ממקור משני + ידע משפחתי",
-   "estimated": "נסיעה, צל, תשלום, אוכל, נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     1,
     2,
@@ -64,7 +57,12 @@
    "fee": "free",
    "booking": false,
    "toilets": "yes",
-   "difficulty": 1
+   "difficulty": 1,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Ramat_hanadiv_hanzachat_zucro_16.jpg/960px-Ramat_hanadiv_hanzachat_zucro_16.jpg",
+    "credit": "Daniel Ventura · CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Ramat_hanadiv_hanzachat_zucro_16.jpg"
+   }
   },
   {
    "id": "T02",
@@ -93,13 +91,6 @@
    "check": "שעות חורף 8:00–16:00 (שישי עד 15:00). ⚠️ רט\"ג הזהירה מהתמוטטות מצוקים בחוף השרון (12.10.2026)",
    "lat": 32.1946,
    "lng": 34.8073,
-   "sources": [
-    "https://www.israelhayom.co.il/article/541641?amp=1",
-    "https://www.tiuli.com/tracks/246/track_info.asp?track_id=245"
-   ],
-   "reliability": "ממקור משני",
-   "estimated": "שירותים, נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     9,
     10,
@@ -121,7 +112,12 @@
    "fee": "paid",
    "booking": false,
    "toilets": "yes",
-   "difficulty": 1
+   "difficulty": 1,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/PikiWiki_Israel_55916_apollonia_-_arsuf.jpg/960px-PikiWiki_Israel_55916_apollonia_-_arsuf.jpg",
+    "credit": "אריאל מנור · CC BY 2.5",
+    "page": "https://commons.wikimedia.org/wiki/File:PikiWiki_Israel_55916_apollonia_-_arsuf.jpg"
+   }
   },
   {
    "id": "T03",
@@ -149,13 +145,6 @@
    "check": "⚠️ אזהרת רט\"ג על התמוטטות מצוקים (12.10.2026) – להתרחק משפת המצוק. הרבה שבילים מבלבלים",
    "lat": 32.229,
    "lng": 34.818,
-   "sources": [
-    "https://www.tiuli.com/tracks/246/track_info.asp?track_id=247",
-    "https://www.parks.org.il/category/newsflash/"
-   ],
-   "reliability": "ממקור משני – הרבה הערכה",
-   "estimated": "אורך, זמן, תשלום, שירותים, נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     9,
     10,
@@ -177,7 +166,12 @@
    "fee": "unknown",
    "booking": false,
    "toilets": "no",
-   "difficulty": 2
+   "difficulty": 2,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/PikiWiki_Israel_8350_sharon_beach_observatory_point.jpg/960px-PikiWiki_Israel_8350_sharon_beach_observatory_point.jpg",
+    "credit": "ד\"ר אבישי טייכר · CC BY 2.5",
+    "page": "https://commons.wikimedia.org/wiki/File:PikiWiki_Israel_8350_sharon_beach_observatory_point.jpg"
+   }
   },
   {
    "id": "T04",
@@ -206,13 +200,6 @@
    "check": "⚠️ אזהרת מצוקים גם בנחל פולג (12.10.2026). להיכנס עד שעתיים וחצי לפני החשכה",
    "lat": 32.273,
    "lng": 34.844,
-   "sources": [
-    "https://pop.education.gov.il/metaylim-im-tchumei-daat/kol-hatiyulim/poleg-yakum/",
-    "https://www.ynetnews.com/articles/0,7340,L-3661029,00.html"
-   ],
-   "reliability": "ממקור משני + ידע משפחתי",
-   "estimated": "אורך, תשלום, נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     12,
     1,
@@ -230,7 +217,12 @@
    "fee": "free",
    "booking": false,
    "toilets": "unknown",
-   "difficulty": 1
+   "difficulty": 1,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Shaar-Poleg-0911.jpg/960px-Shaar-Poleg-0911.jpg",
+    "credit": "Bukvoed · CC BY 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Shaar-Poleg-0911.jpg"
+   }
   },
   {
    "id": "T05",
@@ -259,13 +251,6 @@
    "check": "עמוס מאוד בשבת. לבדוק שהפריחה התחילה. חניה ברחוב דוויט אייזנהאואר",
    "lat": 32.2835,
    "lng": 34.8445,
-   "sources": [
-    "https://www.ynetnews.com/articles/0,7340,L-3661029,00.html",
-    "https://www.kipa.co.il/חדשות/1218953-0/"
-   ],
-   "reliability": "ממקור משני",
-   "estimated": "עגלה, שירותים, נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     1,
     2,
@@ -281,7 +266,12 @@
    "fee": "free",
    "booking": false,
    "toilets": "no",
-   "difficulty": 1
+   "difficulty": 1,
+   "photo": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/PikiWiki_Israel_2894_Netanya_%D7%90%D7%99%D7%A8%D7%95%D7%A1_%D7%94%D7%90%D7%A8%D7%92%D7%9E%D7%9F_%28cropped%29.jpg",
+    "credit": "PikiWiki · CC BY 2.5",
+    "page": "https://commons.wikimedia.org/wiki/File:PikiWiki_Israel_2894_Netanya_%D7%90%D7%99%D7%A8%D7%95%D7%A1_%D7%94%D7%90%D7%A8%D7%92%D7%9E%D7%9F_(cropped).jpg"
+   }
   },
   {
    "id": "T06",
@@ -310,13 +300,6 @@
    "check": null,
    "lat": 32.105,
    "lng": 34.93,
-   "sources": [
-    "https://www.tiuli.com/tracks/343",
-    "https://www.tiuli.com/points-of-interest/776/כפר-הבפטיסטים-במקורות-הירקון"
-   ],
-   "reliability": "ממקור משני + ידע משפחתי",
-   "estimated": "עגלה, הזמנה, נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     1,
     2,
@@ -341,7 +324,12 @@
    "fee": "paid",
    "booking": null,
    "toilets": "yes",
-   "difficulty": 1
+   "difficulty": 1,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Afek_IMG_8217.JPG/960px-Afek_IMG_8217.JPG",
+    "credit": "Deror Avi · CC BY-SA 3.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Afek_IMG_8217.JPG"
+   }
   },
   {
    "id": "T07",
@@ -370,13 +358,6 @@
    "check": null,
    "lat": 32.392,
    "lng": 34.915,
-   "sources": [
-    "https://www.tiuli.com/points-of-interest/608/אגמון-חפר",
-    "https://www.mako.co.il/news-tip12/travel/Article-86988b5e8169d71026.htm"
-   ],
-   "reliability": "ממקור משני",
-   "estimated": "נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     9,
     10,
@@ -396,7 +377,12 @@
    "fee": "free",
    "booking": false,
    "toilets": "unknown",
-   "difficulty": 1
+   "difficulty": 1,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Agamon_Hefer_2021-09-28_IZE-046w.jpg/960px-Agamon_Hefer_2021-09-28_IZE-046w.jpg",
+    "credit": "MathKnight & Zachi Evenor · CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Agamon_Hefer_2021-09-28_IZE-046w.jpg"
+   }
   },
   {
    "id": "T08",
@@ -425,13 +411,6 @@
    "check": "בקטע האחרון לים יש דיונות חול",
    "lat": 32.396,
    "lng": 34.883,
-   "sources": [
-    "https://www.tiuli.com/tracks/102",
-    "https://www.ynetnews.com/articles/0,7340,L-3402217,00.html"
-   ],
-   "reliability": "ממקור משני + ידע משפחתי",
-   "estimated": "נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     1,
     2,
@@ -456,7 +435,12 @@
    "fee": "free",
    "booking": false,
    "toilets": "unknown",
-   "difficulty": 1
+   "difficulty": 1,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/132331_kfar_vitkin_nahal_alexander_PikiWiki_Israel.jpg/960px-132331_kfar_vitkin_nahal_alexander_PikiWiki_Israel.jpg",
+    "credit": "ישראל פרקר · CC BY 2.5",
+    "page": "https://commons.wikimedia.org/wiki/File:132331_kfar_vitkin_nahal_alexander_PikiWiki_Israel.jpg"
+   }
   },
   {
    "id": "T09",
@@ -485,13 +469,6 @@
    "check": "יש סיורים מודרכים של מתנדבים וסיורי עששיות בלילה (ראו לשונית פעילויות)",
    "lat": 32.538,
    "lng": 34.916,
-   "sources": [
-    "https://static.parks.org.il/wp-content/uploads/2025/04/nachal-Taninim.pdf",
-    "https://www.maariv.co.il/lifestyle/travel/Article-841777"
-   ],
-   "reliability": "ממקור רשמי (מפת רט\"ג) + משני",
-   "estimated": "אורך, צל, נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     1,
     2,
@@ -516,7 +493,12 @@
    "fee": "paid",
    "booking": null,
    "toilets": "yes",
-   "difficulty": 1
+   "difficulty": 1,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/57/Taninim.jpg/960px-Taninim.jpg",
+    "credit": "Golf Bravo · CC BY-SA 2.5",
+    "page": "https://commons.wikimedia.org/wiki/File:Taninim.jpg"
+   }
   },
   {
    "id": "T10",
@@ -545,13 +527,6 @@
    "check": null,
    "lat": 32.646,
    "lng": 34.933,
-   "sources": [
-    "https://www.tiuli.com/tracks/28",
-    "https://www.weekend.co.il/track.aspx?id=5563"
-   ],
-   "reliability": "ממקור משני",
-   "estimated": "עגלה, שירותים, נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     3,
     4,
@@ -573,7 +548,12 @@
    "fee": "paid",
    "booking": false,
    "toilets": "yes",
-   "difficulty": 1
+   "difficulty": 1,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Habonim-Dor_Beach_Reserve_-_2021.jpg/960px-Habonim-Dor_Beach_Reserve_-_2021.jpg",
+    "credit": "Roee Gabay · CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Habonim-Dor_Beach_Reserve_-_2021.jpg"
+   }
   },
   {
    "id": "T11",
@@ -602,13 +582,6 @@
    "check": "שעות אוקטובר–מרץ 8:00–16:00, שישי עד 15:00. מופע אור-קולי לרוב בשבת",
    "lat": 32.67,
    "lng": 34.966,
-   "sources": [
-    "https://www.tiuli.com/tracks/177",
-    "https://www.tiuli.com/points-of-interest/336/שמורת-טבע-נחל-מערות"
-   ],
-   "reliability": "ממקור משני",
-   "estimated": "עגלה, צל, הזמנה, נ\"צ",
-   "checked": "15.11.2026",
    "months": [
     12,
     1,
@@ -627,7 +600,12 @@
    "fee": "paid",
    "booking": null,
    "toilets": "yes",
-   "difficulty": 1
+   "difficulty": 1,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/El-Wad_Cave%2C_Nahal_Me%27arot%2C_Israel_-_2019-12-21_-_DSCN6888.jpg/960px-El-Wad_Cave%2C_Nahal_Me%27arot%2C_Israel_-_2019-12-21_-_DSCN6888.jpg",
+    "credit": "DmitTrix · CC0",
+    "page": "https://commons.wikimedia.org/wiki/File:El-Wad_Cave,_Nahal_Me%27arot,_Israel_-_2019-12-21_-_DSCN6888.jpg"
+   }
   }
  ],
  "lodging": [
@@ -647,17 +625,18 @@
    "season_text": "אוקטובר–אפריל",
    "nearby_text": "העיר הנבטית ממשית – הליכה מישורית קצרה",
    "note": "⚠️ לבדוק סגירות בדרום אחרי השיטפונות. חלון ההזמנות לינואר–יוני נפתח בנובמבר. אין מרחב מוגן",
-   "sources": [
-    "https://www.parks.org.il/camping/חניון-לילה-גן-לאומי-ממשית-החאן-הנבטי"
-   ],
-   "reliability": "ממקור רשמי",
-   "checked": "15.11.2026",
    "type": "rtg",
    "private_unit": true,
    "heat_ac": "heat",
    "meals": "kitchen",
    "lat": 31.025,
-   "lng": 35.063
+   "lng": 35.063,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/Mamshit._Palace_of_Mampsis_%284123319670%29.jpg/960px-Mamshit._Palace_of_Mampsis_%284123319670%29.jpg",
+    "credit": "Ian Scott · CC BY-SA 2.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Mamshit._Palace_of_Mampsis_(4123319670).jpg"
+   },
+   "website": "https://www.parks.org.il/camping/חניון-לילה-גן-לאומי-ממשית-החאן-הנבטי"
   },
   {
    "id": "L02",
@@ -675,17 +654,18 @@
    "season_text": "אוקטובר–אפריל",
    "nearby_text": "לבדוק בסבב הבא",
    "note": "מתחם מגודר, גמלים בסופ\"ש. הביקורות האחרונות מ-2023",
-   "sources": [
-    "https://www.weekend.co.il/camping/-han-shayarot"
-   ],
-   "reliability": "ממקור משני",
-   "checked": "15.11.2026",
    "type": "khan",
    "private_unit": true,
    "heat_ac": "ac",
    "meals": "on_request",
    "lat": 30.873,
-   "lng": 34.789
+   "lng": 34.789,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/SdeBokerMar262022_04.jpg/960px-SdeBokerMar262022_04.jpg",
+    "credit": "חגי אגמון-שניר · CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:SdeBokerMar262022_04.jpg"
+   },
+   "website": null
   },
   {
    "id": "L03",
@@ -703,17 +683,18 @@
    "season_text": "נובמבר–מרץ",
    "nearby_text": "מצדה מערב במרחק 15 דקות",
    "note": "רכיבה על חמור מגיל 5. בביקורות ציון ניקיון 3.9",
-   "sources": [
-    "https://www.kfarhanokdim.co.il/en/?p=14757"
-   ],
-   "reliability": "ממקור רשמי + ביקורות",
-   "checked": "15.11.2026",
    "type": "khan",
    "private_unit": true,
    "heat_ac": "both",
    "meals": "included",
    "lat": 31.296,
-   "lng": 35.236
+   "lng": 35.236,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Kfar_HaNokdim_P1080940_%285156340052%29.jpg/960px-Kfar_HaNokdim_P1080940_%285156340052%29.jpg",
+    "credit": "Ricardo Tulio Gandelman · CC BY 2.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Kfar_HaNokdim_P1080940_(5156340052).jpg"
+   },
+   "website": "https://www.kfarhanokdim.co.il/"
   },
   {
    "id": "L04",
@@ -731,17 +712,18 @@
    "season_text": "אוקטובר–אפריל",
    "nearby_text": "לבדוק בסבב הבא",
    "note": "רחוק – מתאים לשני לילות",
-   "sources": [
-    "https://beerotayim.co.il/de/?p=2179"
-   ],
-   "reliability": "ממקור רשמי",
-   "checked": "15.11.2026",
    "type": "khan",
    "private_unit": true,
    "heat_ac": "heat",
    "meals": "included",
    "lat": 30.794,
-   "lng": 34.476
+   "lng": 34.476,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Ezuz_view_may_2014_36.JPG/960px-Ezuz_view_may_2014_36.JPG",
+    "credit": "Daniel Ventura · CC BY-SA 3.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Ezuz_view_may_2014_36.JPG"
+   },
+   "website": "https://beerotayim.co.il/"
   },
   {
    "id": "L05",
@@ -759,17 +741,18 @@
    "season_text": "מאי–אוקטובר",
    "nearby_text": "שביל החושים בנחל שניר (כ-500 מ')",
    "note": "⚠️ לבדוק מצב ביטחוני בצפון. אין מרחב מוגן",
-   "sources": [
-    "https://www.parks.org.il/camping/חניון-לילה-גן-לאומי-חורשת-טל/"
-   ],
-   "reliability": "ממקור רשמי",
-   "checked": "15.11.2026",
    "type": "rtg",
    "private_unit": true,
    "heat_ac": "ac",
    "meals": "kitchen",
    "lat": 33.218,
-   "lng": 35.63
+   "lng": 35.63,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Horshat_Tal_Oaks1.JPG/960px-Horshat_Tal_Oaks1.JPG",
+    "credit": "Ram Eisenberg · CC BY-SA 3.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Horshat_Tal_Oaks1.JPG"
+   },
+   "website": "https://www.parks.org.il/camping/חניון-לילה-גן-לאומי-חורשת-טל/"
   },
   {
    "id": "L06",
@@ -787,17 +770,18 @@
    "season_text": "אביב–סתיו",
    "nearby_text": "מעיין חרוד ובריכות",
    "note": "\"לילה ראשון באוהל\" הכי קל",
-   "sources": [
-    "https://www.parks.org.il/camping/חניון-לילה-גן-לאומי-מעיין-חרוד"
-   ],
-   "reliability": "ממקור רשמי",
-   "checked": "15.11.2026",
    "type": "rtg",
    "private_unit": false,
    "heat_ac": "none",
    "meals": "kitchen",
    "lat": 32.553,
-   "lng": 35.357
+   "lng": 35.357,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Ma%27ayan_Harod_National_Park%2C_Harod_Valley%2C_Israel_10.jpg/960px-Ma%27ayan_Harod_National_Park%2C_Harod_Valley%2C_Israel_10.jpg",
+    "credit": "Hoshvilim · CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Ma%27ayan_Harod_National_Park,_Harod_Valley,_Israel_10.jpg"
+   },
+   "website": "https://www.parks.org.il/camping/חניון-לילה-גן-לאומי-מעיין-חרוד"
   },
   {
    "id": "L07",
@@ -815,17 +799,18 @@
    "season_text": "כל השנה",
    "nearby_text": "לבדוק בסבב הבא",
    "note": "לילת תרגול קרובה לבית",
-   "sources": [
-    "https://www.parks.org.il/camping/חניון-לילה-חוות-משמר-הכרמל"
-   ],
-   "reliability": "ממקור רשמי",
-   "checked": "15.11.2026",
    "type": "rtg",
    "private_unit": null,
    "heat_ac": "heat",
    "meals": "unknown",
    "lat": 32.718,
-   "lng": 35.034
+   "lng": 35.034,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Mishmar_Hacarmel_Water_well_in_mount_Carmel_%282%29.jpg/960px-Mishmar_Hacarmel_Water_well_in_mount_Carmel_%282%29.jpg",
+    "credit": "Hanay · CC BY-SA 3.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Mishmar_Hacarmel_Water_well_in_mount_Carmel_(2).jpg"
+   },
+   "website": "https://www.parks.org.il/camping/חניון-לילה-חוות-משמר-הכרמל"
   },
   {
    "id": "L08",
@@ -843,17 +828,18 @@
    "season_text": "אביב–סתיו",
    "nearby_text": "תל אפק (T06)",
    "note": "לילת תרגול ליד הבית לפני חאן במדבר",
-   "sources": [
-    "https://www.parks.org.il/camping/חניון-לילה-גן-לאומי-ירקון"
-   ],
-   "reliability": "ממקור רשמי",
-   "checked": "15.11.2026",
    "type": "rtg",
    "private_unit": false,
    "heat_ac": "none",
    "meals": "kitchen",
    "lat": 32.105,
-   "lng": 34.909
+   "lng": 34.909,
+   "photo": {
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Yarkon_Sources_Avney_Moreshet_7906a5ec.jpg/960px-Yarkon_Sources_Avney_Moreshet_7906a5ec.jpg",
+    "credit": "זאב שטיין · CC BY 2.5",
+    "page": "https://commons.wikimedia.org/wiki/File:Yarkon_Sources_Avney_Moreshet_7906a5ec.jpg"
+   },
+   "website": "https://www.parks.org.il/camping/חניון-לילה-גן-לאומי-ירקון"
   }
  ],
  "activities": [
@@ -874,14 +860,10 @@
     "רק ביום חול – מתאים לחופש או ליום חופש"
    ],
    "check": null,
-   "sources": [
-    "https://www.maariv.co.il/lifestyle/travel/article-1288917"
-   ],
-   "reliability": "ממקור משני",
-   "checked": "15.11.2026",
    "saturday": "no",
    "lat": 32.543,
-   "lng": 34.901
+   "lng": 34.901,
+   "website": "https://www.teva.org.il/"
   },
   {
    "id": "A02",
@@ -901,14 +883,10 @@
     "אפשר לשלב עם נחל תנינים"
    ],
    "check": "מועדים, שבת, מחיר והנחת מנוי",
-   "sources": [
-    "https://www.tiuli.com/points-of-interest/857/פארק-הצפרות-במעגן-מיכאל"
-   ],
-   "reliability": "ממקור משני",
-   "checked": "15.11.2026",
    "saturday": "unknown",
    "lat": 32.543,
-   "lng": 34.901
+   "lng": 34.901,
+   "website": "https://www.teva.org.il/"
   },
   {
    "id": "A03",
@@ -928,14 +906,10 @@
     "הסבר על הפרח המיוחד בעונה הנכונה"
    ],
    "check": "מועדי 2027",
-   "sources": [
-    "https://www.ynetnews.com/articles/0,7340,L-3661029,00.html"
-   ],
-   "reliability": "ממקור משני (כתבה ישנה)",
-   "checked": "15.11.2026",
    "saturday": "unknown",
    "lat": 32.2835,
-   "lng": 34.8445
+   "lng": 34.8445,
+   "website": "https://www.teva.org.il/"
   },
   {
    "id": "A04",
@@ -954,14 +928,10 @@
     "הרפתקה לילית עם עששיות"
    ],
    "check": "מועדים וגיל",
-   "sources": [
-    "https://www.maariv.co.il/lifestyle/travel/Article-841777"
-   ],
-   "reliability": "ממקור משני",
-   "checked": "15.11.2026",
    "saturday": "unknown",
    "lat": 32.538,
-   "lng": 34.916
+   "lng": 34.916,
+   "website": "https://www.parks.org.il/reserve-park/שמורת-טבע-נחל-תנינים/"
   }
  ]
 }
