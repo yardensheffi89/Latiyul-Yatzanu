@@ -10,14 +10,22 @@ DIFF_TXT = {1: "קל", 2: "קל-בינוני", 3: "בינוני"}
 STROLLER_TXT = {"yes": "כן", "partial": "חלקית", "no": "לא – מנשא"}
 SHADE_TXT = {"none": "אין צל", "low": "מעט צל", "partial": "צל חלקי", "high": "מוצל"}
 WATER_TXT = {"none": "אין", "view": "תצפית / מים בעונה", "wading": "שכשוך", "sea": "ים"}
-MONTHS_TXT = lambda m: "סתיו–אביב (אוקטובר–אפריל)" if m == WINTER else ("חורף–אביב" if m == SPRING_WINTER else "כל השנה")
+def MONTHS_TXT(m):
+    if m == WINTER: return "סתיו–אביב (אוקטובר–אפריל)"
+    if m == SPRING_WINTER: return "חורף–אביב (נובמבר–אפריל)"
+    if m == [1, 2, 3]: return "ינואר–מרץ (פריחת כלניות)"
+    return "כל השנה"
+def WALK_TXT(w):
+    if w < 60: return f"כ-{w} דק'"
+    h, r = divmod(w, 60)
+    return {(1, 0): "כשעה", (1, 15): "כשעה ורבע", (1, 30): "כשעה וחצי", (2, 0): "כשעתיים", (2, 30): "כשעתיים וחצי"}.get((h, r), f"כ-{w/60:g} שעות")
 
 def T(id, name, region, drive, lat, lng, km, walk, route, diff, stroller, shade, water, fee, why, poi="", check=None,
       months=WINTER, shuttle=False, shuttle_text=None, length_text=None, walk_text=None, toilets="unknown",
       booking=False, booking_text=None, fee_text=None, food="", sub="negev"):
     return {
         "id": id, "name": name, "region": region, "area": "south", "subarea": sub, "drive_min": drive,
-        "length_text": length_text or f"{km} ק\"מ", "walk_text": walk_text or (f"כ-{walk} דק'" if walk < 60 else f"כ-{walk/60:g} שעות"),
+        "length_text": length_text or f"{km} ק\"מ", "walk_text": walk_text or WALK_TXT(walk),
         "route_text": ROUTE_TXT[route], "shuttle_text": shuttle_text or ("כן" if shuttle else "לא"),
         "difficulty_text": DIFF_TXT[diff], "stroller_text": STROLLER_TXT[stroller], "shade_text": SHADE_TXT[shade],
         "water_text": WATER_TXT[water], "season_text": MONTHS_TXT(months),
